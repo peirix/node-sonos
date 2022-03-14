@@ -27,8 +27,8 @@
                     SPILL
                 </button>
             </div>
-            <div x-show="currentTrack !== null" class="flex mt-20">
-                <div class="relative w-20 h-20" @click="toggle()">
+            <div x-show="currentTrack" class="flex items-center mt-10">
+                <div class="relative w-20 h-20 ml-auto" @click="toggle()">
                     <img
                         :src="currentTrack.absoluteAlbumArtUri"
                         class="w-full h-full object-cover"
@@ -41,7 +41,7 @@
                 </div>
                 <input
                     type="range"
-                    class="w-1/2 m-auto mt-6"
+                    class="w-1/2 ml-4 mr-auto"
                     min="0"
                     max="40"
                     x-model="volume"
@@ -54,6 +54,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
         <script>
+            const room = 'To%20banan';
             document.addEventListener('alpine:init', () => {
                 Alpine.data('slideshow', () => ({
                     songs: [
@@ -103,7 +104,7 @@
                         });
                     },
                     checkState() {
-                        fetch('/Sjæl/state')
+                        fetch(`/${room}/state`)
                             .then(res => res.json())
                             .then(res => {
                                 console.log(res);
@@ -117,14 +118,14 @@
                             });
                     },
                     play() {
-                        fetch('/Sjæl/spotify/now/' + this.songs[this.slideshowIndex].uri)
+                        fetch(`/${room}/spotify/now/${this.songs[this.slideshowIndex].uri}`)
                             .then(res => res.json())
                             .then(res => {
                                 console.log(res);
                             });
                     },
                     toggle() {
-                        fetch('/Sjæl/playpause')
+                        fetch(`/${room}/playpause`)
                             .then(res => res.json())
                             .then(res => {
                                 console.log(res);
@@ -132,7 +133,7 @@
                             });
                     },
                     setVolume() {
-                        fetch('/Sjæl/volume/' + this.volume)
+                        fetch(`/${room}/volume/${this.volume}`)
                             .then(res => res.json())
                             .then(res => {
                                 console.log(res);
