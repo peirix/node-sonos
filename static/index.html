@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sonos</title>
+        <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+        <link rel="stylesheet" href="/main.css" />
+    </head>
+    <body>
+        <div x-data="slideshow">
+            <div class="swiper">
+                <ul class="swiper-wrapper">
+                    <template x-for="item in songs">
+                        <li class="swiper-slide">
+                            <img :src="item.cover" class="w-full h-full object-cover" />
+                        </li>
+                    </template>
+                </ul>
+            </div>
+            <div class="flex justify-center">
+                <button
+                    class="bg-green-500 text-white rounded-full px-8 py-4 text-2xl"
+                    @click="play()"
+                >
+                    SPILL
+                </button>
+            </div>
+            <div x-show="currentTrack !== null" class="flex mt-20">
+                <div class="relative w-20 h-20" @click="toggle()">
+                    <img
+                        :src="currentTrack.absoluteAlbumArtUri"
+                        class="w-full h-full object-cover"
+                    />
+                    <button
+                        x-show="status"
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full w-9 h-9 text-2xl after:absolute after:top-3 after:left-3"
+                        :class="status === 'playing' ? 'css--pause' : 'css--play'"
+                    ></button>
+                </div>
+                <input
+                    type="range"
+                    class="w-1/2 m-auto mt-6"
+                    min="0"
+                    max="40"
+                    x-model="volume"
+                    @change="setVolume"
+                />
+            </div>
+        </div>
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+        <script src="//unpkg.com/alpinejs" defer></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('slideshow', () => ({
+                    songs: [
+                        {
+                            uri: 'spotify:playlist:4jMjoM6a8afYAdeDYI8Tb6',
+                            cover: 'https://image.ceneostatic.pl/data/products/48783570/i-kanye-west-college-dropout-vinyl-lp.jpg'
+                        },
+                        {
+                            uri: 'spotify:playlist:3zrtr0e7grcHu8mp6LXOXw',
+                            cover: 'https://gfx.nrk.no/q-h03mzhOp6pPIv7xuhqQAG6XMasX__bdxnRK3w-GwHg'
+                        },
+                        {
+                            uri: 'spotify:album:44a3VEf5qKT5lgOvV9r6TV',
+                            cover: 'https://i.scdn.co/image/cdb2426a3af7eaec35313cbd1321c359c99ff90f'
+                        }
+                    ],
+                    currentTrack: null,
+                    slideshowIndex: 0,
+                    volume: 0,
+                    status: null,
+
+                    init() {
+                        setInterval(() => {
+                            this.checkState();
+                        }, 1000);
+                        const swiper = new Swiper('.swiper', {
+                            effect: 'coverflow',
+                            grabCursor: true,
+                            centeredSlides: true,
+                            slidesPerView: 'auto',
+                            coverflowEffect: {
+                                rotate: 50,
+                                stretch: 0,
+                                depth: 100,
+                                modifier: 1,
+                                slideShadows: true
+                            },
+                            on: {
+                                slideChange: swiper => {
+                                    this.slideshowIndex = swiper.activeIndex;
+                                }
+                            }
+                        });
+                    },
+                    checkState() {
+                        fetch('/Sjæl/state')
+                            .then(res => res.json())
+                            .then(res => {
+                                console.log(res);
+                                this.volume = res.volume;
+                                this.currentTrack = res.currentTrack;
+                                if (res.playbackState === 'PAUSED_PLAYBACK') {
+                                    this.status = 'pause';
+                                } else if (res.playbackState === 'PLAYING') {
+                                    this.status = 'playing';
+                                }
+                            });
+                    },
+                    play() {
+                        fetch('/Sjæl/spotify/now/' + this.songs[this.slideshowIndex].uri)
+                            .then(res => res.json())
+                            .then(res => {
+                                console.log(res);
+                            });
+                    },
+                    toggle() {
+                        fetch('/Sjæl/playpause')
+                            .then(res => res.json())
+                            .then(res => {
+                                console.log(res);
+                                this.status = res.paused ? 'pause' : 'playing';
+                            });
+                    },
+                    setVolume() {
+                        fetch('/Sjæl/volume/' + this.volume)
+                            .then(res => res.json())
+                            .then(res => {
+                                console.log(res);
+                            });
+                    }
+                }));
+            });
+        </script>
+    </body>
+</html>
