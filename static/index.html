@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
         <link rel="stylesheet" href="/main.css" />
     </head>
-    <body>
+    <body class="bg-gray-900">
         <div x-data="slideshow">
             <div class="swiper">
                 <ul class="swiper-wrapper">
@@ -41,12 +41,21 @@
                 </div>
                 <input
                     type="range"
-                    class="w-1/2 ml-4 mr-auto"
+                    class="w-1/2 mx-4"
                     min="0"
                     max="40"
                     x-model="volume"
                     @change="setVolume"
                 />
+                <button class="mr-4 bg-blue-800 text-white rounded-full w-10 h-10" @click="prev()">
+                    &larr;
+                </button>
+                <button
+                    class="mr-auto bg-blue-800 text-white rounded-full w-10 h-10"
+                    @click="next()"
+                >
+                    &rarr;
+                </button>
             </div>
         </div>
         <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
@@ -69,6 +78,22 @@
                         {
                             uri: 'spotify:album:44a3VEf5qKT5lgOvV9r6TV',
                             cover: 'https://i.scdn.co/image/cdb2426a3af7eaec35313cbd1321c359c99ff90f'
+                        },
+                        {
+                            uri: 'spotify:playlist:6hVdzqRMhby4WZ33ywgxLK',
+                            cover: 'https://mir-s3-cdn-cf.behance.net/project_modules/1400/e90d0770476735.5ba5c8f805e95.jpeg'
+                        },
+                        {
+                            uri: 'spotify:playlist:0f2b2uppg4mtQXJPl0XNRR',
+                            cover: 'https://cdn1.vox-cdn.com/thumbor/zfUQE6vrHeQ-nffQApdxNEgZKEI=/0x0:1280x720/1280x720/cdn0.vox-cdn.com/uploads/chorus_image/image/43551360/minecraft_ps4_edition.0.0.jpg'
+                        },
+                        {
+                            uri: 'spotify:album:4VgkYtDFyxeOIzq7hK10AX',
+                            cover: 'https://bjornis.icdn.no/media/barnehage/brannvernpakken-hvitbakgrunn2.jpg'
+                        },
+                        {
+                            uri: 'spotify:album:3MlMn982EMpXe0vQ7KMMyQ',
+                            cover: 'https://www.jollyroom.no/storage/ma/c6b2535bbcfc4c77888654ce78c5789d/93093b514b784245891f5d08ab447830/jpg/C5253393C615526850C523C861ABC22DCBCB04C4/540178.jpg'
                         },
                         {
                             uri: 'spotify:playlist:37i9dQZF1DX0DxcHtn4Hwo',
@@ -131,6 +156,12 @@
                                 console.log(res);
                                 this.status = res.paused ? 'pause' : 'playing';
                             });
+                    },
+                    prev() {
+                        fetch(`/${room}/previous`);
+                    },
+                    next() {
+                        fetch(`/${room}/next`);
                     },
                     setVolume() {
                         fetch(`/${room}/volume/${this.volume}`)
