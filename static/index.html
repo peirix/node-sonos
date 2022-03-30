@@ -10,6 +10,10 @@
     </head>
     <body class="bg-gray-900">
         <div x-data="slideshow">
+            <button
+                class="absolute top-0 left-0 w-10 h-10 z-40"
+                @click="location.reload()"
+            ></button>
             <div class="swiper">
                 <ul class="swiper-wrapper">
                     <template x-for="item in songs">
@@ -27,7 +31,7 @@
                     SPILL
                 </button>
             </div>
-            <div x-show="currentTrack" class="flex items-center mt-10">
+            <div x-show="currentTrack" class="flex items-center mt-6">
                 <div class="relative w-20 h-20 ml-auto" @click="toggle()">
                     <img
                         :src="currentTrack.absoluteAlbumArtUri"
@@ -47,14 +51,17 @@
                     x-model="volume"
                     @change="setVolume"
                 />
-                <button class="mr-4 bg-blue-800 text-white rounded-full w-10 h-10" @click="prev()">
-                    &larr;
+                <button
+                    class="mr-4 bg-blue-800 text-xl text-white rounded-full w-10 h-10"
+                    @click="prev()"
+                >
+                    &larrb;
                 </button>
                 <button
-                    class="mr-auto bg-blue-800 text-white rounded-full w-10 h-10"
+                    class="mr-auto bg-blue-800 text-xl text-white rounded-full w-10 h-10"
                     @click="next()"
                 >
-                    &rarr;
+                    &rarrb;
                 </button>
             </div>
         </div>
